@@ -1,5 +1,6 @@
 package seedu.address.model.person;
 
+import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.ArrayList;
@@ -18,28 +19,44 @@ import seedu.address.model.tag.Tag;
  * Guarantees: details are present and not null, field values are validated, immutable.
  */
 public class Person {
+    // Label message used for other identity/data fields
+    public static final String LABEL_MESSAGE =
+            "Labels can be made up of alphanumerical characters, spaces, and hyphens. "
+                    + "It must adhere to the following constraints:\n"
+                    + "1. The label cannot be made up of only spaces and/or hyphens only.";
+    // Common label regex used for other identity/data fields
+    // Can contain any alphanumerical characters, space, hyphen. But cannot be made up of space/hyphen only.
+    private static final String ALPHANUMERIC_SPACE_HYPHEN = "(?=.*[a-zA-Z0-9])[a-zA-Z0-9 -]+";
+    public static final String LABEL_VALIDATION_REGEX = "\\(" + ALPHANUMERIC_SPACE_HYPHEN + "\\)";
 
     // Identity fields
     private final Name name;
     private final Phone phone;
+    private final OtherPhones otherPhones;
     private final Email email;
 
     // Data fields
     private final Address address;
     private final Set<Tag> tags = new HashSet<>();
     private final List<Meeting> meetings = new ArrayList<>();
+    private final FlagStatus flagStatus;
 
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, List<Meeting> meetings) {
-        requireAllNonNull(name, phone, email, address, tags, meetings);
+    public Person(Name name, Phone phone, OtherPhones otherPhones,
+                  Email email, Address address, Set<Tag> tags,
+                  List<Meeting> meetings, FlagStatus isFlagged) {
+        requireAllNonNull(name, phone, email, address, tags,
+                meetings, isFlagged);
         this.name = name;
         this.phone = phone;
+        this.otherPhones = otherPhones;
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
         this.meetings.addAll(meetings);
+        this.flagStatus = isFlagged;
     }
 
     public Name getName() {
@@ -50,12 +67,24 @@ public class Person {
         return phone;
     }
 
+    public OtherPhones getOtherPhones() {
+        return otherPhones;
+    }
+
     public Email getEmail() {
         return email;
     }
 
     public Address getAddress() {
         return address;
+    }
+
+    public FlagStatus getFlagStatus() {
+        return flagStatus;
+    }
+
+    public boolean isFlagged() {
+        return flagStatus.isFlagged();
     }
 
     /**
@@ -91,8 +120,24 @@ public class Person {
         meetings.remove(index);
     }
 
+    /**
+     * Returns the number of meetings the person has.
+     */
     public int getMeetingCount() {
         return meetings.size();
+    }
+
+    /**
+     * Edits a meeting from the person's meeting list.
+     * @param meetingToEdit the index of the meeting to be edited.
+     * @param meeting the updated meeting to replace the old meeting.
+     */
+    public void editMeeting(int meetingToEdit, Meeting meeting) {
+        assert meetingToEdit >= 0;
+        assert meetingToEdit < meetings.size();
+        requireNonNull(meeting);
+
+        meetings.set(meetingToEdit, meeting);
     }
 
     /**
@@ -116,13 +161,14 @@ public class Person {
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
                 && tags.equals(otherPerson.tags)
-                && meetings.equals(otherPerson.meetings);
+                && meetings.equals(otherPerson.meetings)
+                && flagStatus.equals(otherPerson.flagStatus);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags);
+        return Objects.hash(name, phone, email, address, tags, flagStatus);
     }
 
     @Override
@@ -133,6 +179,8 @@ public class Person {
                 .add("email", email)
                 .add("address", address)
                 .add("tags", tags)
+                .add("meetings", meetings)
+                .add("isFlagged", flagStatus)
                 .toString();
     }
 

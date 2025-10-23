@@ -2,6 +2,7 @@ package seedu.address.logic.commands;
 
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MEETING_INDEX;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PERSON_INDEX;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
@@ -18,17 +19,17 @@ import seedu.address.model.person.Person;
  */
 public class DeleteMeetingCommand extends Command {
 
-    public static final String COMMAND_WORD = "deletemeeting";
+    public static final String COMMAND_WORD = "deletemt";
 
     public static final String MESSAGE_FORMAT = "Parameters:\n"
-            + "INDEX (must be a positive integer)\n"
+            + PREFIX_PERSON_INDEX + "INDEX (must be a positive integer)\n"
             + PREFIX_MEETING_INDEX + "MEETING_INDEX (must be a positive integer)\n";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + "Deletes the meeting for the person identified by the index number used in the displayed person list"
+            + ": Deletes the meeting for the person identified by the index number used in the displayed person list"
             + " and the index number of the meeting in the person's meeting list. \n"
             + MESSAGE_FORMAT
-            + "Example: " + COMMAND_WORD + " 1" + PREFIX_MEETING_INDEX + "1";
+            + "Example: " + COMMAND_WORD + " " + PREFIX_PERSON_INDEX + "1 " + PREFIX_MEETING_INDEX + "1";
 
     public static final String MESSAGE_INVALID_MEETING_DISPLAYED_INDEX = "The meeting index provided is invalid";
     public static final String MESSAGE_INVALID_BLANK = "Please provide arguments after the command word.\n"
@@ -55,7 +56,7 @@ public class DeleteMeetingCommand extends Command {
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Person> lastShownList = model.getPersonList();
 
         if (personIndex.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
@@ -72,13 +73,14 @@ public class DeleteMeetingCommand extends Command {
 
         // Creates a new Person object with the updated meetings list
         Person editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(),
-                personToEdit.getEmail(), personToEdit.getAddress(), personToEdit.getTags(),
-                personToEdit.getMeetings());
+                personToEdit.getOtherPhones(), personToEdit.getEmail(),
+                personToEdit.getAddress(), personToEdit.getTags(),
+                personToEdit.getMeetings(), personToEdit.getFlagStatus());
 
         // Replaces the old person with the new person in the model to refresh the GUI
         model.setPerson(personToEdit, editedPerson);
 
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        model.updatePersonListFilter(PREDICATE_SHOW_ALL_PERSONS);
 
         return new CommandResult(String.format(MESSAGE_DELETE_MEETING_SUCCESS, Messages.format(personToEdit)));
     }

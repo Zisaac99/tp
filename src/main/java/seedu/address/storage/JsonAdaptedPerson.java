@@ -13,7 +13,9 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.meeting.Meeting;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.FlagStatus;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.OtherPhones;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.tag.Tag;
@@ -27,21 +29,26 @@ class JsonAdaptedPerson {
 
     private final String name;
     private final String phone;
+    private final String otherPhones;
     private final String email;
     private final String address;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final List<JsonAdaptedMeeting> meetings = new ArrayList<>();
+    private final Boolean flagStatus;
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
+            @JsonProperty("otherPhones") String otherPhones,
             @JsonProperty("email") String email, @JsonProperty("address") String address,
             @JsonProperty("tags") List<JsonAdaptedTag> tags,
-            @JsonProperty("meetings") List<JsonAdaptedMeeting> meetings) {
+            @JsonProperty("meetings") List<JsonAdaptedMeeting> meetings,
+            @JsonProperty("flagStatus") Boolean flagStatus) {
         this.name = name;
         this.phone = phone;
+        this.otherPhones = otherPhones;
         this.email = email;
         this.address = address;
         if (tags != null) {
@@ -50,6 +57,7 @@ class JsonAdaptedPerson {
         if (meetings != null) {
             this.meetings.addAll(meetings);
         }
+        this.flagStatus = flagStatus;
     }
 
     /**
@@ -58,6 +66,7 @@ class JsonAdaptedPerson {
     public JsonAdaptedPerson(Person source) {
         name = source.getName().fullName;
         phone = source.getPhone().value;
+        otherPhones = source.getOtherPhones().value;
         email = source.getEmail().value;
         address = source.getAddress().value;
         tags.addAll(source.getTags().stream()
@@ -66,6 +75,7 @@ class JsonAdaptedPerson {
         meetings.addAll(source.getMeetings().stream()
                 .map(JsonAdaptedMeeting::new)
                 .collect(Collectors.toList()));
+        flagStatus = source.isFlagged();
     }
 
     /**
@@ -115,9 +125,17 @@ class JsonAdaptedPerson {
         }
         final Address modelAddress = new Address(address);
 
+        if (flagStatus == null) {
+            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT,
+                    FlagStatus.class.getSimpleName()));
+        }
+        final FlagStatus modelFlagStatus = new FlagStatus(flagStatus);
+
+        final OtherPhones modelOtherPhones = new OtherPhones(otherPhones);
         final Set<Tag> modelTags = new HashSet<>(personTags);
         final List<Meeting> modelMeetings = new ArrayList<>(personMeetings);
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelMeetings);
+        return new Person(modelName, modelPhone, modelOtherPhones, modelEmail,
+                modelAddress, modelTags, modelMeetings, modelFlagStatus);
     }
 
 }

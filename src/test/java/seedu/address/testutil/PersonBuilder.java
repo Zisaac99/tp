@@ -8,7 +8,9 @@ import java.util.Set;
 import seedu.address.model.meeting.Meeting;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.FlagStatus;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.OtherPhones;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.tag.Tag;
@@ -21,15 +23,19 @@ public class PersonBuilder {
 
     public static final String DEFAULT_NAME = "Amy Bee";
     public static final String DEFAULT_PHONE = "85355255";
+    public static final String DEFAULT_OTHER_PHONE = "92317869";
     public static final String DEFAULT_EMAIL = "amy@gmail.com";
     public static final String DEFAULT_ADDRESS = "123, Jurong West Ave 6, #08-111";
+    public static final Boolean DEFAULT_FLAG = false;
 
     private Name name;
     private Phone phone;
+    private OtherPhones otherPhones;
     private Email email;
     private Address address;
     private Set<Tag> tags;
     private List<Meeting> meetings;
+    private FlagStatus flagStatus;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -37,10 +43,12 @@ public class PersonBuilder {
     public PersonBuilder() {
         name = new Name(DEFAULT_NAME);
         phone = new Phone(DEFAULT_PHONE);
+        otherPhones = new OtherPhones(DEFAULT_OTHER_PHONE);
         email = new Email(DEFAULT_EMAIL);
         address = new Address(DEFAULT_ADDRESS);
         tags = new HashSet<>();
         meetings = new ArrayList<>();
+        flagStatus = new FlagStatus(DEFAULT_FLAG);
     }
 
     /**
@@ -49,10 +57,12 @@ public class PersonBuilder {
     public PersonBuilder(Person personToCopy) {
         name = personToCopy.getName();
         phone = personToCopy.getPhone();
+        otherPhones = personToCopy.getOtherPhones();
         email = personToCopy.getEmail();
         address = personToCopy.getAddress();
         tags = new HashSet<>(personToCopy.getTags());
         meetings = new ArrayList<>(personToCopy.getMeetings());
+        flagStatus = personToCopy.getFlagStatus();
     }
 
     /**
@@ -88,6 +98,14 @@ public class PersonBuilder {
     }
 
     /**
+     * Sets the {@code OtherPhones} of the {@code Person} that we are building.
+     */
+    public PersonBuilder withOtherPhones(String otherPhones) {
+        this.otherPhones = new OtherPhones(otherPhones);
+        return this;
+    }
+
+    /**
      * Sets the {@code Email} of the {@code Person} that we are building.
      */
     public PersonBuilder withEmail(String email) {
@@ -103,8 +121,16 @@ public class PersonBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@code isFlagged} of the {@code Person} that we are building.
+     */
+    public PersonBuilder withFlagStatus(Boolean isFlagged) {
+        this.flagStatus = new FlagStatus(isFlagged);
+        return this;
+    }
+
     public Person build() {
-        return new Person(name, phone, email, address, tags, meetings);
+        return new Person(name, phone, otherPhones, email, address, tags, meetings, flagStatus);
     }
 
 }

@@ -26,12 +26,18 @@ import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.DeleteMeetingCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.logic.commands.EditMeetingCommand;
+import seedu.address.logic.commands.EditMeetingCommand.EditMeetingDescriptor;
 import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
+import seedu.address.logic.commands.FindMeetingCommand;
+import seedu.address.logic.commands.FlagCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.UnflagCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.meeting.Meeting;
+import seedu.address.model.person.MeetingNameContainsKeywordsPredicate;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
@@ -86,6 +92,15 @@ public class AddressBookParserTest {
     }
 
     @Test
+    public void parseCommand_findMeeting() throws Exception {
+        List<String> keywords = Arrays.asList("foo", "bar", "baz");
+        FindMeetingCommand command = (FindMeetingCommand) parser.parseCommand(
+                FindMeetingCommand.COMMAND_WORD + " "
+                        + keywords.stream().collect(Collectors.joining(" ")));
+        assertEquals(new FindMeetingCommand(new MeetingNameContainsKeywordsPredicate(keywords)), command);
+    }
+
+    @Test
     public void parseCommand_help() throws Exception {
         assertTrue(parser.parseCommand(HelpCommand.COMMAND_WORD) instanceof HelpCommand);
         assertTrue(parser.parseCommand(HelpCommand.COMMAND_WORD + " 3") instanceof HelpCommand);
@@ -104,9 +119,27 @@ public class AddressBookParserTest {
         final String datetime = "2025-10-11 1400";
         final Meeting meeting = new Meeting(meetingName, venue, datetime);
         AddMeetingCommand command = (AddMeetingCommand) parser.parseCommand(AddMeetingCommand.COMMAND_WORD
-                + " " + INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_MEETING + meetingName
+                + " " + PREFIX_PERSON_INDEX + INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_MEETING + meetingName
                 + " " + PREFIX_VENUE + venue + " " + PREFIX_WHEN + datetime);
         assertEquals(new AddMeetingCommand(INDEX_FIRST_PERSON, meeting), command);
+    }
+
+    @Test
+    public void parseCommand_editMeeting() throws Exception {
+        final String updatedMeetingName = "Some meeting";
+        final String updatedVenue = "Some venue";
+        final String updatedDatetime = "2025-10-11 1400";
+        final Meeting updatedMeeting = new Meeting(updatedMeetingName, updatedVenue, updatedDatetime);
+        EditMeetingDescriptor descriptor = new EditMeetingDescriptor();
+        descriptor.setMeetingName(updatedMeeting.getMeetingName());
+        descriptor.setVenue(updatedMeeting.getVenue());
+        descriptor.setWhen(updatedMeeting.getWhen());
+        EditMeetingCommand command = (EditMeetingCommand) parser.parseCommand(EditMeetingCommand.COMMAND_WORD
+                + " " + PREFIX_PERSON_INDEX + INDEX_FIRST_PERSON.getOneBased()
+                + " " + PREFIX_MEETING_INDEX + INDEX_FIRST_MEETING.getOneBased()
+                + " " + PREFIX_MEETING + updatedMeetingName + " " + PREFIX_VENUE + updatedVenue
+                + " " + PREFIX_WHEN + updatedDatetime);
+        assertEquals(new EditMeetingCommand(INDEX_FIRST_PERSON, INDEX_FIRST_MEETING, descriptor), command);
     }
 
     @Test
@@ -116,6 +149,22 @@ public class AddressBookParserTest {
                         + PREFIX_PERSON_INDEX + INDEX_FIRST_PERSON.getOneBased() + " "
                         + PREFIX_MEETING_INDEX + INDEX_FIRST_MEETING.getOneBased());
         assertEquals(new DeleteMeetingCommand(INDEX_FIRST_PERSON, INDEX_FIRST_MEETING), command);
+    }
+
+    @Test
+    public void parseCommand_flag() throws Exception {
+        FlagCommand command = (FlagCommand) parser.parseCommand(
+                FlagCommand.COMMAND_WORD + " "
+                        + INDEX_FIRST_PERSON.getOneBased());
+        assertEquals(new FlagCommand(INDEX_FIRST_PERSON), command);
+    }
+
+    @Test
+    public void parseCommand_unflag() throws Exception {
+        UnflagCommand command = (UnflagCommand) parser.parseCommand(
+                UnflagCommand.COMMAND_WORD + " "
+                        + INDEX_FIRST_PERSON.getOneBased());
+        assertEquals(new UnflagCommand(INDEX_FIRST_PERSON), command);
     }
 
     @Test

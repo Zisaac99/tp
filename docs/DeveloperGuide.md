@@ -92,7 +92,9 @@ Here's a (partial) class diagram of the `Logic` component:
 
 The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete 1")` API call as an example.
 
+<div id="delete-sequence-diagram">
 <puml src="diagrams/DeleteSequenceDiagram.puml" alt="Interactions Inside the Logic Component for the `delete 1` Command" />
+</div>
 
 <box type="info" seamless>
 
@@ -157,6 +159,36 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 ## **Implementation**
 
 This section describes some noteworthy details on how certain features are implemented.
+### Multi-value fields for contacts
+Certain fields of the contacts, e.g. email, address, and other numbers, allow the user to store multiple values. Whereas, other fields like name and main number do not allow storing multi values.
+Take for example, email, which is entered into the add command arguments as e=johnsmith@gmail.com (Personal email) johnss@u.nus.edu (NUS email). It will also be displayed in the GUI as johnsmith@gmail.com (Personal email) johnss@u.nus.edu (NUS email).
+
+
+For the most part the sequence diagram for the add command will look like the [Delete Sequence Diagram](#delete-sequence-diagram) that we have seen above just that we need to change all the delete operations/classes to add. 
+Instead, we will now be focusing on the classes/objects for the validation of multi-value fields which the sequence diagram below will show. The main differences can be seen in the AddCommandParser.
+
+<puml src="diagrams/AddSequenceDiagram.puml" width="450"/>
+
+<box type="info" seamless>
+**Note:** The XYZField that is mentioned in the sequence diagram refers to a person's field which supports storing multiple values.
+</box>
+
+<box type="info" seamless>
+**Note:** The ... in parse refers to the arguments for the add command which for example would be: n=John Doe mn=98765432 on=9999 (Office) 6789 (School) e=johnd@example.com (Main) johnd@school.com (School) a=311, Clementi Ave 2, #02-25 (Home) Kent Ridge Drive Blk 2 (School) t=friends t=owesMoney
+</box>
+
+<box type="info" seamless>
+**Note:** This sequence diagram only focuses on one of the fields that support storing multiple values as an example.
+</box>
+
+How the `Multi-value fields` logic works:
+
+1. After `AddCommandParser` is called upon to parse the arguments it calls the relevant static method from `ParserUtil`
+1. After `ParserUtil` is called upon to parse the XYZField it calls upon the `XYZField` class to validate that fields argument that was passed.
+1. The `XYZField` class needs to call upon `ParserUtil` to help parse the arguments for that fields into a list of the parameters and labels before it can validate them.
+
+#### Implementation
+
 
 ### \[Proposed\] Undo/redo feature
 
@@ -351,7 +383,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests user to try again
   
@@ -389,7 +421,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests user to try again
 
@@ -427,7 +459,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  The system detects an error in the list command.
+* 1a. The system detects an error in the list command.
 
     * 1a1. FAContactsPro requests for the correct command.
 
@@ -471,7 +503,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -509,7 +541,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -547,7 +579,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -585,7 +617,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -623,7 +655,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -671,7 +703,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -719,7 +751,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -757,7 +789,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -784,7 +816,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -811,7 +843,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -821,7 +853,7 @@ Use case ends.
 
       Use case resumes from Step 2.
 
-* 1b.  FAContactsPro is unable to retrieve the specified contact from storage
+* 1b. FAContactsPro is unable to retrieve the specified contact from storage
 
     * 1b1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -848,7 +880,7 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -858,7 +890,7 @@ Use case ends.
 
       Use case resumes from Step 2.
 
-* 1b.  FAContactsPro is unable to retrieve the specified contact from storage
+* 1b. FAContactsPro is unable to retrieve the specified contact from storage
 
     * 1b1. FAContactsPro app displays an error message and requests the user to try again.
 
@@ -885,23 +917,117 @@ Use case ends.
 
 **Extensions**
 
-* 1a.  FAContacts pro detects an error in the command entered.
+* 1a. FAContacts pro detects an error in the command entered.
 
     * 1a1. FAContactsPro app displays an error message and requests the user to try again.
 
-    * 1a2. User enters a new command to  view all upcoming meetings with client
+    * 1a2. User enters a new command to view all upcoming meetings with client.
 
       Steps 1a1-1a2 are repeated until the command entered is correct.
 
       Use case resumes from Step 2.
 
-* 1b.  FAContactsPro is unable to retrieve the specified contact/meetings from storage
+* 1b. FAContactsPro is unable to retrieve the specified contact/meetings from storage.
 
     * 1b1. FAContactsPro app displays an error message and requests the user to try again.
 
-    * 1b2. User enters a new command to add custom note to contact
+    * 1b2. User enters a new command to view all upcoming meetings with client.
 
       Steps 1b1-1b2 are repeated until the system is able to retrieve the contact/meetings from storage without any errors.
+
+      Use case resumes from Step 2.
+
+**System: FAContactsPro**
+
+**Use case: UC16 - Add new meeting for a specified contact**
+
+**Actor: User**
+
+**MSS**
+
+1. User types in command to add a new meeting for a specified contact
+
+2. FAContactsPro app successfully adds a new meeting for the specified contact
+
+Use case ends.
+
+
+**Extensions**
+
+* 1a. FAContacts pro detects an error in the command entered.
+
+    * 1a1. FAContactsPro app displays an error message and requests the user to try again.
+
+    * 1a2. User enters a new command to add a new meeting for a contact.
+
+      Steps 1a1-1a2 are repeated until the command entered is correct.
+
+      Use case resumes from Step 2.
+
+* 1b. FAContactsPro is unable to retrieve the specified contact/meetings from storage.
+
+    * 1b1. FAContactsPro app displays an error message and requests the user to try again.
+
+    * 1b2. User enters a new command to add a new meeting for a contact.
+
+      Steps 1b1-1b2 are repeated until the system is able to retrieve the contact/meetings from storage without any errors.
+
+      Use case resumes from Step 2.
+
+* 1c. FAContactsPro is unable to update the contacts in the storage.
+
+    * 1c1. FAContactsPro requests for the user to key in the add new meeting command again.
+
+    * 1c2. The user types in the new command.
+
+      Steps 1c1 - 1c2 is repeated until the system is able to update the data from the storage without any errors.
+
+      Use case resumes from Step 2.
+
+**System: FAContactsPro**
+
+**Use case: UC17 - Edit an existing meeting for a specified contact**
+
+**Actor: User**
+
+**MSS**
+
+1. User types in command to edit an existing meeting for a specified contact.
+
+2. FAContactsPro app successfully updates the meeting for the specified contact.
+
+Use case ends.
+
+
+**Extensions**
+
+* 1a. FAContacts pro detects an error in the command entered.
+
+    * 1a1. FAContactsPro app displays an error message and requests the user to try again.
+
+    * 1a2. User enters a new command to add a new meeting for a contact.
+
+      Steps 1a1-1a2 are repeated until the command entered is correct.
+
+      Use case resumes from Step 2.
+
+* 1b. FAContactsPro is unable to retrieve the specified contact/meetings from storage.
+
+    * 1b1. FAContactsPro app displays an error message and requests the user to try again.
+
+    * 1b2. User enters a new command to add a new meeting for a contact.
+
+      Steps 1b1-1b2 are repeated until the system is able to retrieve the contact/meetings from storage without any errors.
+
+      Use case resumes from Step 2.
+
+* 1c. FAContactsPro is unable to update the contacts in the storage.
+
+    * 1c1. FAContactsPro requests for the user to key in the add new meeting command again.
+
+    * 1c2. The user types in the new command.
+
+      Steps 1c1 - 1c2 is repeated until the system is able to update the data from the storage without any errors.
 
       Use case resumes from Step 2.
 
